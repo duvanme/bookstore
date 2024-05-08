@@ -18,6 +18,5 @@ public class Author {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String Name;
-    @OneToMany
-    private List<Book> books;
+
 }
