@@ -1,6 +1,8 @@
 package com.crud.bookstore.services;
 
+import com.crud.bookstore.entities.Author;
 import com.crud.bookstore.entities.Book;
+import com.crud.bookstore.repositories.AuthorRepository;
 import com.crud.bookstore.repositories.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,7 +14,19 @@ public class BookService {
    @Autowired
     private BookRepository bookRepository;
 
+    @Autowired(required = false)
+    private AuthorRepository authorRepository;
+
     public Book createBook(Book book){
+
+        if (book.getAuthor() != null && book.getAuthor().getId() != null) {
+            Integer authorId = book.getAuthor().getId();
+            Author existingAuthor = authorRepository.findById(authorId).orElse(null);
+            if (existingAuthor != null) {
+                book.setAuthor(existingAuthor);
+            }
+        }
+
         return  bookRepository.save(book);
     }
     public List<Book> getAllBooks(){
@@ -29,6 +43,8 @@ public class BookService {
     }
 
     public void deleteUser(Integer id){
-        bookRepository.deleteById(id);
+        Book bookToDelete = bookRepository.findById(id).orElse(null);
+        bookToDelete.setAuthor(null);
+        bookRepository.delete(bookToDelete);
     };
 }
